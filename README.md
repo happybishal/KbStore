@@ -1,2 +1,16 @@
-# KbStore
-A minimal responsive e-commerce web app built with Django, Alpine.js, and TailwindCSS. Features live product search, category filtering, and interactive cart with add/remove items. Clean UI, persistent cart, and ready for deployment. Perfect showcase of modern full-stack skills.
+Ecommerce Store
+
+A fully-featured products e-commerce store built with Django, Alpine.js, and TailwindCSS.
+
+Users can:
+- Browse products by category
+- Search for products live
+- Add/remove items from a cart (with persistent state)
+
+---
+
+Tech Stack
+- Backend: Django  
+- Frontend: Alpine.js  
+- Styling: TailwindCSS  
+- Deployment: Render  
