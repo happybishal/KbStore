@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KBeauty Store</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Meta + Base Styles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body class="bg-gray-50 text-gray-800 p-6 font-sans">
+
+    <!-- Inject products into JS context -->
+    <script>
+        window.products = {{ products|safe }};
+    </script>
+
+    <!-- Alpine Component -->
+    <div x-data="productFilter()" class="max-w-4xl mx-auto">
+               
+        <!-- Title -->
+        <h1 class="text-3xl font-bold mb-6">KB Products</h1>
+
+        <!-- Search -->
+        <div class="mb-4">
+            <input
+                x-model="search"
+                type="text"
+                placeholder="Search products..."
+                class="w-full p-2 border border-gray-300 rounded"
+            >
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button
+                @click="selected = 'all'"
+                :class="selected === 'all' ? 'bg-yellow-300' : 'bg-white'"
+                class="border px-3 py-1 rounded"
+            >
+                All
+            </button>
+            {% for category in categories %}
+                <button
+                    @click="selected = '{{ category.slug }}'"
+                    :class="selected === '{{ category.slug }}' ? 'bg-yellow-300' : 'bg-white'"
+                    class="border px-3 py-1 rounded"
+                >
+                    {{ category.name }}
+                </button>
+            {% endfor %}
+        </div>
+
+        <!-- Product List -->
+        <ul class="space-y-4">
+            <template x-for="product in filtered" :key="product.id">
+                <li class="bg-white p-4 rounded shadow">
+                    <img :src="product.image" class="w-24 h-24 object-cover rounded mr-4">
+
+                    <div class="flex justify-between items-center">
+                        <h2 x-text="product.name" class="text-lg font-semibold"></h2>
+                        <button
+                            @click="addToCart(product)"
+                            class="bg-yellow-400 hover:bg-yellow-300 text-sm px-3 py-1 rounded"
+                        >
+                            Add to Cart
+                        </button>
+                    </div>
+                    <p x-text="product.description" class="text-sm text-gray-600 mt-1"></p>
+                    <p class="mt-2 font-bold">$<span x-text="product.price"></span></p>
+                </li>
+            </template>
+        </ul>
+
+        <!-- Empty State -->
+        <p x-show="filtered.length === 0" class="text-red-500 mt-6">
+            No matching products found.
+        </p>
+
+        <!-- Cart -->
+        <div class="mt-10 border-t pt-6">
+            <h2 class="text-xl font-semibold mb-3">🛒 Cart</h2>
+        
+            <template x-for="item in cart" :key="item.id">
+                <div class="flex items-center justify-between mb-2 text-sm">
+                    <div>
+                        <span x-text="item.name" class="font-medium"></span>
+                        <span class="mx-2">×</span>
+                        <span x-text="item.qty"></span>
+                        <span class="mx-2">=</span>
+                        $<span x-text="(item.qty * item.price).toFixed(2)"></span>
+                    </div>
+                    <div class="space-x-1">
+                        <button @click="decreaseQty(item.id)" class="bg-red-400 text-white px-2 rounded">−</button>
+                        <button @click="increaseQty(item.id)" class="bg-green-400 text-white px-2 rounded">+</button>
+                    </div>
+                </div>
+            </template>
+        
+            <p x-show="cart.length === 0" class="text-gray-500">Cart is empty.</p>
+        
+            <p x-show="cart.length > 0" class="font-bold mt-3">
+                Total: $<span x-text="total()"></span>
+            </p>
+        </div>
+    
+        <button @click="showCheckout = true" x-show="cart.length > 0" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+            Checkout
+        </button>
+        <div x-show="showCheckout" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white p-6 rounded shadow max-w-sm w-full">
+                <h2 class="text-xl font-semibold mb-4">Order Placed ✅</h2>
+                <p>Thank you for shopping with us!</p>
+                <button @click="showCheckout = false; cart = []" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">Close</button>
+            </div>
+        </div>
+        
+
+    <!-- Custom JS -->
+    <script src="{% static 'store/js/product.js' %}"></script>
+</body>
+</html>
